@@ -1,0 +1,2 @@
+#TrimbleGeoDBToDatabase
+print("Hello, World!")
