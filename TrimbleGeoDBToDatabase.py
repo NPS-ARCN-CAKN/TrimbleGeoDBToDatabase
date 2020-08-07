@@ -1,2 +1,3 @@
 #TrimbleGeoDBToDatabase
-print("Hello, World!")
+print("Hello")
+
