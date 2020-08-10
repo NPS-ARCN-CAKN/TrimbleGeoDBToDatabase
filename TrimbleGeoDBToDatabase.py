@@ -9,36 +9,19 @@ import csv
 
 
 # Input parameters
-GeoDB = arcpy.GetParameterAsText(0) # The input geodatabase (Workspace)
+# GeoDB = arcpy.GetParameterAsText(0) # The input geodatabase (Workspace)
+GeoDB = "C:/Work/VitalSigns/ARCN-CAKN Shallow Lakes/Local/2020-07 Geodatabase/2020/YUCH_2020/YUCH_2020_Deployment.gdb"
+print(GeoDB)
 
 # set the workspace
 arcpy.env.workspace = GeoDB
-
-# Function to export a featureclass as a json file
-def ExportJSON(FeatureClass):
-    try:
-        # This will be the output json file
-        JsonFile = os.path.dirname(arcpy.env.workspace) + '\\' + FeatureClass + '.json'
-        
-        # If the json file exists already then delete it 
-        if os.path.exists(JsonFile):
-            arcpy.AddMessage("File exists: " + JsonFile + '. Deleted')
-            os.remove(JsonFile)
-
-        # Export the FeatureClass
-        arcpy.AddMessage("Exporting " + JsonFile)
-        arcpy.FeaturesToJSON_conversion(FeatureClass, JsonFile, "NOT_FORMATTED")
-    except Exception as e:
-        arcpy.AddMessage('Export failed for FeatureClass: ' + FeatureClass + ' ' + str(e))
-
 
 # loop through all the feature classes in the geodatabase and export them to json files
 try:
     FeatureClasses = arcpy.ListFeatureClasses()
     for FeatureClass in FeatureClasses:
-        arcpy.AddMessage("Processing " + FeatureClass)
-        ExportCSV(FeatureClass)
-        ExportJSON(FeatureClass)
+        #arcpy.AddMessage("Processing " + FeatureClass)
+        print("  " + FeatureClass)
 except Exception as e:
     arcpy.AddMessage('Error: ' + str(e))
 
