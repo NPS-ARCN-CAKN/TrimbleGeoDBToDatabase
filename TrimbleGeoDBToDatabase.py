@@ -51,7 +51,8 @@ def Export_Secchi_Joined():
         Field_names =  [Field.name for Field in Fields]
 
         # We need to ensure all the lakes exist before we can create sampling events, this variable will hold that checking code.
-        LakeExistQueries = "-- All the lakes in the input geodatabase must exist in tblPonds before events can be created or updated\nIF "
+        LakeExistQueries = "-- All the lakes in the input geodatabase must exist in tblPonds before events can be created or updated\n "
+        LakeExistQueries = LakeExistQueries + "IF "
 
         # Insert queries
         InsertQueries = ""
@@ -171,7 +172,7 @@ def Export_Depth_Joined():
 # NOTE: secchi depth is stored in the tblEvents table so this script tries to create a new event. There is no Secchi depth table in the database.
 # Since events must be present to insert the other records this script must be run first.
 # This may not be what you expect.
-def Export_Loons_Joined():
+def Export_Loons_Joined(): 
     try:
         FeatureClass = "Loons_Joined"
 
