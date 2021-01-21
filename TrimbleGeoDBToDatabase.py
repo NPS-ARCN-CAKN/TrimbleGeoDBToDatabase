@@ -26,9 +26,11 @@ SourceFilename = os.path.basename(GeoDB) # Extract just the filename from the pa
 username = getpass.getuser()
 
 # Standard header information to put in each sql script
-HeaderInfo = "-- NPS Arctic and Central Alaska Inventory and Monitoring Program, Shallow Lakes Monitoring\n\n"
+HeaderInfo = "/*\n"
+HeaderInfo = HeaderInfo + "NPS Arctic and Central Alaska Inventory and Monitoring Program, Shallow Lakes Monitoring\n\n"
+HeaderInfo = HeaderInfo + "This ArcTool script is available at https://github.com/NPS-ARCN-CAKN/TrimbleGeoDBToDatabase.\n\n"
 #HeaderInfo = HeaderInfo + "Source geodatabase: " + GeoDB + "\n*/\n\n"
-
+HeaderInfo = HeaderInfo + "*/\n\n"
 
 
 
