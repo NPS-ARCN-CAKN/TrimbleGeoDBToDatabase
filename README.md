@@ -1,5 +1,10 @@
 # TrimbleGeoDBToDatabase
-Shallow Lakes Monitoring: Trimble Geodatabase to Database Import Tool
+The TrimbleGeoDBToDatabase tool is used by the National Park Service's Arctic Network Inventory and Monitoring Program to transfer field data collected on a Trimble data collection application to the master database. The tool converts the data in the Trimble geodatabase into SQL insert query scripts.
+
+Information about the Shallow Lakes monitoring program can be found at [Shallow Lakes monitoring program](https://www.nps.gov/im/cakn/shallowlakes.htm)
+
+Documentation is in the TrimbleGeoDBToDatabase_Help.pdf help file.
+
 
 Written by Scott D. Miller, Data manager, National Park Service Arctic Network Inventory and Monitoring Program, Fairbanks, AK.
 https://www.nps.gov/im/arcn/index.htm
