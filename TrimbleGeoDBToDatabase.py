@@ -355,9 +355,9 @@ def Export_Loons_Joined():
 
 
 
-
+# Translates the data in the Water_Profile_Joined featureclass into a script of SQL insert queries that can be executed on the AK_ShallowLakes database.
 def Export_Water_Profile():
-    # try:
+    try:
         FeatureClass = "Water_Profile_Joined" # Geodatabase feature class name
         TableName = "tblWaterProfiles" # Database table name
 
@@ -447,17 +447,13 @@ def Export_Water_Profile():
         arcpy.AddMessage(FinishedMessage)
 
     # When something goes wrong, let user know
-    # except expression as identifier:
-    #     error = 'Error: ' + FeatureClass + ' ' + str(e)
-    #     arcpy.AddMessage(error)
-    #     print(error)
+    except expression as identifier:
+        error = 'Error: ' + FeatureClass + ' ' + str(e)
+        arcpy.AddMessage(error)
+        print(error)
 
 
-
-
-
-
-
+# Take a DateTime and return a Date
 def GetShortDate(LongDate):
     TheDate = datetime.datetime.strptime(LongDate, '%Y-%m-%d %H:%M:%S')
     ShortDate = str(TheDate.year) + "-" + str(TheDate.month) + "-" + str(TheDate.day)
