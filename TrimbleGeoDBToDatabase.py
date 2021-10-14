@@ -13,8 +13,8 @@ import datetime
 import os
     
 # ArcTool input parameters
-#GeoDB = arcpy.GetParameterAsText(0) # ArcTool parameter # 1: The input geodatabase (Workspace).
-GeoDB = "C:/Work/VitalSigns/ARCN-CAKN Shallow Lakes/Local/2020-07 Geodatabase/2020/YUCH_2020/YUCH_2020_Deployment.gdb"
+GeoDB = arcpy.GetParameterAsText(0) # ArcTool parameter # 1: The input geodatabase (Workspace).
+
 
 # Set the workspace
 arcpy.env.workspace = GeoDB
@@ -249,12 +249,9 @@ def Export_Loons_Joined():
 
         # We need a query to determine if all the Events needed in the new data to be imported exist in tblEvents or not
         EventExistsQuery = "-- Determine if all the necessary parent Event records exist before trying to insert\n"
-        EventExistsQuery = EventExistsQuery + "IF\n"
 
         # We need a query to determine if all the Events needed in the new data to be imported exist in tblEvents or not
         RecordExistsQuery = "    -- Determine if records exist already so we can avoid duplication\n"
-        RecordExistsQuery = "        IF "
-
 
         # Build a query to select the just inserted records in order to validate them
         ValidateQuery = "SELECT * FROM " + TableName + " WHERE\n"
@@ -274,11 +271,10 @@ def Export_Loons_Joined():
         SqlFile.write("Datetime: " + str(datetime.datetime.now())  + ".\n")
         SqlFile.write("*/\n\n")
         
-
-        
         # loop through the data rows and translate the data cells into an SQL insert query
+        i = 0
         for row in arcpy.da.SearchCursor(FeatureClass,Field_names):
-            i = 0
+            
 
             # Get the field values into variables
             PondName = str(row[13])
@@ -308,41 +304,39 @@ def Export_Loons_Joined():
 
             # Write the insert query to file
             InsertQueries = InsertQueries + "                INSERT INTO " + TableName + "(PONDNAME,SAMPLEDATE,SPECIES,NUM_ADULTS,NUM_YOUNG,DETECTION_TYPE,LATITUDE,LONGITUDE,COMMENTS,SOURCE) VALUES("  + "'"  + PondName + "','" + SampleDateShort + "','" + SPECIES + "'," + NUM_ADULTS + "," + NUM_YOUNG + ",'" + DETECTION_TYPE + "'," + LATITUDE + "," + LONGITUDE + ",'" + COMMENTS + "','" + SOURCE + "');\n"
-            #InsertQueries = InsertQueries + "        IF NOT EXISTS ()"
-            #InsertQueries = InsertQueries + "        INSERT INTO " + TableName + "(PONDNAME,SAMPLEDATE,SPECIES,NUM_ADULTS,NUM_YOUNG,DETECTION_TYPE,LATITUDE,LONGITUDE,COMMENTS,SOURCE) VALUES("  + "'"  + PondName + "','" + SampleDateShort + "','" + SPECIES + "'," + NUM_ADULTS + "," + NUM_YOUNG + ",'" + DETECTION_TYPE + "'," + LATITUDE + "," + LONGITUDE + ",'" + COMMENTS + "','" + SOURCE + "');\n"
 
+            #increment the counter
+            i = i + 1
+            
         SqlFile.write("USE AK_ShallowLakes\n\n")
         SqlFile.write("-- Execute the query below to view/validate records that may be altered.\n-- " + ValidateQuery[:len(ValidateQuery) - 3] + "\n\n")
 
         # Write out the query that will determine if the required Events all exist
-        EventExistsQuery = EventExistsQuery[:len(EventExistsQuery) - 6] + '\n' # Remove the trailing ' and '
-        
+        EventExistsQuery = "IF " + EventExistsQuery[:len(EventExistsQuery) - 6] + '\n' # Remove the trailing ' and '
 
         # # If the parent Events don't exist in tblEvents then exit the procedure
         SqlFile.write(EventExistsQuery + "    BEGIN\n")
         SqlFile.write("        PRINT 'The required parent Event records exist in tblEvents.'\n")
-        SqlFile.write("        BEGIN\n")
-        SqlFile.write("    " + RecordExistsQuery[:len(RecordExistsQuery) - 6] + "\n\n")
+        SqlFile.write("        IF " + RecordExistsQuery[:len(RecordExistsQuery) - 6] + "\n")
         SqlFile.write("            BEGIN\n")
         
-        # # If we get here then the Events exist and the records to be inserted do not exist, insert them.
-        # SqlFile.write("           -- Danger zone below. ROLLBACK on error.\n")
-        # SqlFile.write("           -- Insert the records\n")
-        #SqlFile.write("                PRINT 'inserts'\n")
+        # If we get here then the Events exist and the records to be inserted do not exist, insert them.
+        SqlFile.write("               -- Danger zone below. ROLLBACK on error.\n")
+        SqlFile.write("               -- Insert the records\n")
+        SqlFile.write("                PRINT 'Checks complete, inserting the records'\n")
         SqlFile.write("                BEGIN TRANSACTION -- COMMIT ROLLBACK\n")
         SqlFile.write(InsertQueries)
-        SqlFile.write("               PRINT ' ??? records inserted from " + FeatureClass + " into database table " + TableName + ".'\n")
+        SqlFile.write("               PRINT '" + str(i) + " records inserted from " + FeatureClass + " into database table " + TableName + ".'\n")
         SqlFile.write("               PRINT 'DO NOT FORGET TO COMMIT OR ROLLBACK OR THE DATABASE WILL BE LEFT IN A HANGING STATE!!!!'\n")
         SqlFile.write("            END\n")
-        SqlFile.write("        END\n")
-        SqlFile.write("    ELSE\n")
-        SqlFile.write("        PRINT 'One or more records you are trying to insert already exists.'")
-        # 
-        # 
-        # SqlFile.write("        ELSE\n")
-        # SqlFile.write("            print 'One or more records exist already. Uncomment and use the validation query above to help determine which " + FeatureClass + "\\" + TableName + " records exist already.'\n")
+        SqlFile.write("        ELSE\n")
+        SqlFile.write("            PRINT 'INSERTS ABORTED: No records were inserted because one or more records you are trying to insert already exists. Uncomment the validation query above and execute it by itself to see the records in question.'\n")
+        # # 
+        # # 
+        # # SqlFile.write("        ELSE\n")
+        # # SqlFile.write("            print 'One or more records exist already. Uncomment and use the validation query above to help determine which " + FeatureClass + "\\" + TableName + " records exist already.'\n")
         SqlFile.write("    END\n")
-        SqlFile.write("ELSE\n    PRINT 'One or more parent Event records (tblEvents) related to the record you are trying to insert does not exist.'\n\n")
+        SqlFile.write("ELSE\n    PRINT 'INSERTS ABORTED: No records were inserted because one or more parent Event records (tblEvents) related to the record you are trying to insert does not exist.'\n\n")
 
         
 
