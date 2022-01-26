@@ -1,5 +1,5 @@
-# Written by Scott D. Miller
-# National Park Service, Arctic Inventory and Monitoring programs
+# Written by Scott D. Miller, improved by Nick Bywater
+# National Park Service, Arctic and Central Alaska Inventory and Monitoring programs
 # Shallow Lakes Monitoring Protocol
 # https://www.nps.gov/im/cakn/shallowlakes.htm
 # Purpose: Import field data into the lakes monitoring database. This python script translates the field data in the geodatabase
@@ -15,7 +15,7 @@ import os
 import arcpy
 
 # ArcTool input parameters
-GeoDB = arcpy.GetParameterAsText(0) # ArcTool parameter # 1: The input geodatabase (Workspace).
+#GeoDB = arcpy.GetParameterAsText(0) # ArcTool parameter # 1: The input geodatabase (Workspace).
 #GeoDB = "C:/Work/VitalSigns/ARCN-CAKN Shallow Lakes/Local/2020-07 Geodatabase/2020/YUCH_2020/YUCH_2020_Deployment.gdb"
 
 # Set the workspace
