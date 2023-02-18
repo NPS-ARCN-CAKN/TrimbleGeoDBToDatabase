@@ -533,6 +533,8 @@ def ExportWaterSampleJoined():
         print(Error)
 
 def Main():
+    print('\nLog date/time: ' + str(datetime.datetime.now())  + '.\n')
+
     ExportSecchiJoined()
     ExportDepthJoined()
     ExportLoonsJoined()
