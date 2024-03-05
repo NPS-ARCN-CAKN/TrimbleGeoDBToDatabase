@@ -10,6 +10,18 @@
 
 import TrimbleUtility
 
+def FindDuplicateWaterSampleKeys(arcpy):
+    return FindDuplicatePrimaryKeys(arcpy, 'Water_Sample_Joined')
+
+def FindDuplicateSecchiKeys(arcpy):
+    return FindDuplicatePrimaryKeys(arcpy, 'Secchi_Joined')
+
+def FindDuplicateLoonKeys(arcpy):
+    return FindDuplicatePrimaryKeys(arcpy, 'Loons_Joined')
+
+def FindDuplicatePondDepthKeys(arcpy):
+    return FindDuplicatePrimaryKeys(arcpy, 'Depth_Joined')
+
 def FindDuplicatePrimaryKeys(arcpy, FeatureClassName):
     """
     Find only duplicate records in data, and return a dictionary of the
