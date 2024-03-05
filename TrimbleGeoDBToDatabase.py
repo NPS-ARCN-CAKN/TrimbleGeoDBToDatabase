@@ -17,9 +17,6 @@ import getpass
 import datetime
 import os
 import TrimbleUtility
-import TestTrimbleGeoDB
-
-import arcpy
 
 ##### Command line usage ######
 # When the variable 'GEO_DB_PATH' is set to the path of the
@@ -32,15 +29,18 @@ import arcpy
 # Example script 'script.py':
 
 # import TrimbleGeoDBToDatabase
+# import TestTrimbleGeoDB
+# import arcpy
 #
 # def TransformGeoDB():
 #     GEO_DB_PATH = "C:/fake_dir/fake.gdb"
+#     arcpy.env.workspace = GEO_DB_PATH
 #
 #     # Transform and write SQL 'INSERT' statements.
-#     TrimbleGeoDBToDatabase.ExportSecchiJoined(GEO_DB_PATH)
+#     TrimbleGeoDBToDatabase.ExportSecchiJoined(arcpy)
 #
 #     # 'd' is a dictionary.
-#     d = TestTrimbleGeoDB.FindDuplicatePrimaryKeys(arcpy, 'Secchi_Joined')
+#     d = TestTrimbleGeoDB.FindDuplicateSecchiKeys(arcpy)
 #     print('Secchi: ', d)
 #
 # if __name__ == "__main__":
@@ -53,7 +53,7 @@ import arcpy
 # The output is written to the same directory as the referenced
 # geodatabase in the 'GEO_DB_PATH' argument supplied to each function.
 
-def ExportSecchiJoined(GEO_DB_PATH):
+def ExportSecchiJoined(arcpy):
     """
     Translates the data in the Secchi_Joined featureclass into a
     script of SQL insert queries that can be executed on the
@@ -64,8 +64,9 @@ def ExportSecchiJoined(GEO_DB_PATH):
     is no Secchi depth table in the database.
     """
     try:
-        # Set the workspace
-        arcpy.env.workspace = GEO_DB_PATH
+        GEO_DB_PATH = arcpy.env.workspace
+
+        AssertGeoDB(GEO_DB_PATH)
 
         SOURCE_FILE_NAME = os.path.basename(GEO_DB_PATH) # Extract just the filename from the path.
 
@@ -178,19 +179,19 @@ def ExportSecchiJoined(GEO_DB_PATH):
         arcpy.AddMessage(FinishedMessage)
 
     except Exception as e:
-        Error = 'Error: ' + FEATURE_CLASS + ' ' + str(e)
+        Error = 'Error in function ExportSecchiJoined: ' + str(e)
         arcpy.AddMessage(Error)
-        print(Error)
 
-def ExportDepthJoined(GEO_DB_PATH):
+def ExportDepthJoined(arcpy):
     """
     Translates the data in the Depth_Joined featureclass into a script
     of SQL insert queries that can be executed on the AK_ShallowLakes
     database.
     """
     try:
-        # Set the workspace
-        arcpy.env.workspace = GEO_DB_PATH
+        GEO_DB_PATH = arcpy.env.workspace
+
+        AssertGeoDB(GEO_DB_PATH)
 
         SOURCE_FILE_NAME = os.path.basename(GEO_DB_PATH) # Extract just the filename from the path.
 
@@ -276,19 +277,19 @@ def ExportDepthJoined(GEO_DB_PATH):
         arcpy.AddMessage(FinishedMessage)
 
     except Exception as e:
-        Error = 'Error: ' + FEATURE_CLASS + ' ' + str(e)
+        Error = 'Error in function ExportDepthJoined: ' + str(e)
         arcpy.AddMessage(Error)
-        print(Error)
 
-def ExportLoonsJoined(GEO_DB_PATH):
+def ExportLoonsJoined(arcpy):
     """
     Translates the data in the Loons_Joined featureclass into a script
     of SQL insert queries that can be executed on the AK_ShallowLakes
     database.
     """
     try:
-        # Set the workspace
-        arcpy.env.workspace = GEO_DB_PATH
+        GEO_DB_PATH = arcpy.env.workspace
+
+        AssertGeoDB(GEO_DB_PATH)
 
         SOURCE_FILE_NAME = os.path.basename(GEO_DB_PATH) # Extract just the filename from the path.
 
@@ -398,19 +399,19 @@ def ExportLoonsJoined(GEO_DB_PATH):
         arcpy.AddMessage(FinishedMessage)
 
     except Exception as e:
-        Error = 'Error: ' + FEATURE_CLASS + ' ' + str(e)
+        Error = 'Error in function ExportLoonsJoined:' + str(e)
         arcpy.AddMessage(Error)
-        print(Error)
 
-def ExportWaterSampleJoined(GEO_DB_PATH):
+def ExportWaterSampleJoined(arcpy):
     """
     Translates the data in the Water_Sample_Joined featureclass into a
     script of SQL insert queries that can be executed on the
     AK_ShallowLakes database.
     """
     try:
-        # Set the workspace
-        arcpy.env.workspace = GEO_DB_PATH
+        GEO_DB_PATH = arcpy.env.workspace
+
+        AssertGeoDB(GEO_DB_PATH)
 
         SOURCE_FILE_NAME = os.path.basename(GEO_DB_PATH) # Extract just the filename from the path.
 
@@ -516,19 +517,19 @@ def ExportWaterSampleJoined(GEO_DB_PATH):
         arcpy.AddMessage(FinishedMessage)
 
     except Exception as e:
-        Error = 'Error: ' + FEATURE_CLASS + ' ' + str(e)
+        Error = 'Error in function ExportWaterSampleJoined: ' + str(e)
         arcpy.AddMessage(Error)
-        print(Error)
 
-def ExportMonumentJoined(GEO_DB_PATH):
+def ExportMonumentJoined(arcpy):
     """
     Translates the data in the Monument featureclass into a
     script of SQL insert statements that can be executed on the
     AK_ShallowLakes database.
     """
     try:
-        # Set the workspace
-        arcpy.env.workspace = GEO_DB_PATH
+        GEO_DB_PATH = arcpy.env.workspace
+
+        AssertGeoDB(GEO_DB_PATH)
 
         SOURCE_FILE_NAME = os.path.basename(GEO_DB_PATH) # Extract just the filename from the path.
 
@@ -587,9 +588,8 @@ def ExportMonumentJoined(GEO_DB_PATH):
         SqlFile.write(WrapSQLStatementsInTransaction(InsertStatements))
 
     except Exception as e:
-        Error = 'Error: ' + FEATURE_CLASS + ' ' + str(e)
+        Error = 'Error in function ExportMonumentJoined: ' + str(e)
         arcpy.AddMessage(Error)
-        print(Error)
 
 def GetFileHeader(Purpose, GeoDBPath, FeatureClass, SQLFileName):
     """
@@ -627,3 +627,6 @@ def WrapSQLStatementsInTransaction(SQLStatements):
     sql += "END CATCH\n\n"
 
     return sql
+
+def AssertGeoDB(GEO_DB_PATH):
+    assert GEO_DB_PATH is not None, "arcpy.env.workspace must be a geodatabase path string!"
