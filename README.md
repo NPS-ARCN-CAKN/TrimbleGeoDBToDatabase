@@ -7,7 +7,9 @@ The monitoring protocol, standard operating procedures, reports and other produc
 Documentation is in the TrimbleGeoDBToDatabase_Help.pdf help file.
 
 Written and maintained by information management staff of the National Park Service's Arctic and Central Alaska Inventory and Monitoring Programs, Fairbanks, AK.
+
 https://www.nps.gov/im/arcn/index.htm
+
 https://www.nps.gov/im/cakn/index.htm
 
 # License
