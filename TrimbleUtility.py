@@ -7,6 +7,8 @@
 # PURPOSE:
 # This module contains utility functions that help the main program.
 
+import arcpy
+
 def GetDateTime(PyDateTime, DateTimeType):
     if DateTimeType == 'd':
         DateTime = PyDateTime.strftime('%Y-%m-%d')
@@ -17,7 +19,7 @@ def GetDateTime(PyDateTime, DateTimeType):
 
     return DateTime
 
-def GetFeatureClassRows(arcpy, FeatureClassName):
+def GetFeatureClassRows(FeatureClassName):
     """
     The paramenter 'FeatureClassName' takes as its argument the name
     of the feature class.
