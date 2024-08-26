@@ -10,38 +10,38 @@
 
 import TrimbleUtility
 
-def FindDuplicateWaterSampleKeys(arcpy):
-    return FindDuplicatePrimaryKeys(arcpy, 'Water_Sample_Joined')
+def FindDuplicateWaterSampleKeys():
+    return FindDuplicatePrimaryKeys('Water_Sample_Joined')
 
-def FindDuplicateSecchiKeys(arcpy):
-    return FindDuplicatePrimaryKeys(arcpy, 'Secchi_Joined')
+def FindDuplicateSecchiKeys():
+    return FindDuplicatePrimaryKeys('Secchi_Joined')
 
-def FindDuplicateLoonKeys(arcpy):
-    return FindDuplicatePrimaryKeys(arcpy, 'Loons_Joined')
+def FindDuplicateLoonKeys():
+    return FindDuplicatePrimaryKeys('Loons_Joined')
 
-def FindDuplicatePondDepthKeys(arcpy):
-    return FindDuplicatePrimaryKeys(arcpy, 'Depth_Joined')
+def FindDuplicatePondDepthKeys():
+    return FindDuplicatePrimaryKeys('Depth_Joined')
 
-def FindDuplicatePrimaryKeys(arcpy, FeatureClassName):
+def FindDuplicatePrimaryKeys(FeatureClassName):
     """
     Find only duplicate records in data, and return a dictionary of the
     concatenation of the record's primary key and the duplicate
     count.
     """
     if FeatureClassName == 'Water_Sample_Joined':
-       d = GetPrimaryKeys(arcpy, FeatureClassName)
+        d = GetPrimaryKeys(FeatureClassName)
     elif FeatureClassName == 'Secchi_Joined':
-        d = GetPrimaryKeys(arcpy, FeatureClassName)
+        d = GetPrimaryKeys(FeatureClassName)
     elif FeatureClassName == 'Loons_Joined':
-        d = GetPrimaryKeys(arcpy, FeatureClassName)
+        d = GetPrimaryKeys(FeatureClassName)
     elif FeatureClassName == 'Depth_Joined':
-        d = GetPrimaryKeys(arcpy, FeatureClassName)
+        d = GetPrimaryKeys(FeatureClassName)
 
     return FilterDuplicates(d)
 
-def GetPrimaryKeys(arcpy, FeatureClassName):
+def GetPrimaryKeys(FeatureClassName):
     d = {}
-    for Row in TrimbleUtility.GetFeatureClassRows(arcpy, FeatureClassName):
+    for Row in TrimbleUtility.GetFeatureClassRows(FeatureClassName):
         PySampleDateTime = Row['CreationDateTimeLocal']
 
         # A record without a creation datetime is not a valid record.

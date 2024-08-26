@@ -13,47 +13,13 @@
 # U.S. Government Public Domain License
 
 # Import utilities
+import arcpy
 import getpass
 import datetime
 import os
 import TrimbleUtility
 
-##### Command line usage ######
-# When the variable 'GEO_DB_PATH' is set to the path of the
-# geodatabase (see below), the expectation is that the user will
-# execute this program by using the installed ArcGIS Python typically
-# located at a file path that looks similar to (might be located
-# somewhere else on your system):
-# c:\Progra~1\ArcGIS\Pro\bin\Python\scripts\propy.bat
-
-# Example script 'script.py':
-
-# import TrimbleGeoDBToDatabase
-# import TestTrimbleGeoDB
-# import arcpy
-#
-# def TransformGeoDB():
-#     GEO_DB_PATH = "C:/fake_dir/fake.gdb"
-#     arcpy.env.workspace = GEO_DB_PATH
-#
-#     # Transform and write SQL 'INSERT' statements.
-#     TrimbleGeoDBToDatabase.ExportSecchiJoined(arcpy)
-#
-#     # 'd' is a dictionary.
-#     d = TestTrimbleGeoDB.FindDuplicateSecchiKeys(arcpy)
-#     print('Secchi: ', d)
-#
-# if __name__ == "__main__":
-#     TransformGeoDB()
-
-# Executing 'script.py' from ArcGIS Pro commandline:
-
-# >c:\Progra~1\ArcGIS\Pro\bin\Python\scripts\propy.bat script.py
-
-# The output is written to the same directory as the referenced
-# geodatabase in the 'GEO_DB_PATH' argument supplied to each function.
-
-def ExportSecchiJoined(arcpy):
+def ExportSecchiJoined():
     """
     Translates the data in the Secchi_Joined featureclass into a
     script of SQL insert queries that can be executed on the
@@ -95,7 +61,7 @@ def ExportSecchiJoined(arcpy):
         # Insert queries
         InsertQueries = []
 
-        for Row in TrimbleUtility.GetFeatureClassRows(arcpy, FEATURE_CLASS):
+        for Row in TrimbleUtility.GetFeatureClassRows(FEATURE_CLASS):
             PySampleDateTime = Row['CreationDateTimeLocal']
 
             # A record without a creation datetime is not a valid
@@ -182,7 +148,7 @@ def ExportSecchiJoined(arcpy):
         Error = 'Error in function ExportSecchiJoined: ' + str(e)
         arcpy.AddMessage(Error)
 
-def ExportDepthJoined(arcpy):
+def ExportDepthJoined():
     """
     Translates the data in the Depth_Joined featureclass into a script
     of SQL insert queries that can be executed on the AK_ShallowLakes
@@ -229,7 +195,7 @@ def ExportDepthJoined(arcpy):
 
         SqlFile.write("BEGIN TRANSACTION -- COMMIT ROLLBACK\n\n")
 
-        for Row in TrimbleUtility.GetFeatureClassRows(arcpy, FEATURE_CLASS):
+        for Row in TrimbleUtility.GetFeatureClassRows(FEATURE_CLASS):
             PySampleDateTime = Row['CreationDateTimeLocal']
 
             # A record without a creation datetime is not a valid
@@ -280,7 +246,7 @@ def ExportDepthJoined(arcpy):
         Error = 'Error in function ExportDepthJoined: ' + str(e)
         arcpy.AddMessage(Error)
 
-def ExportLoonsJoined(arcpy):
+def ExportLoonsJoined():
     """
     Translates the data in the Loons_Joined featureclass into a script
     of SQL insert queries that can be executed on the AK_ShallowLakes
@@ -329,7 +295,7 @@ def ExportLoonsJoined(arcpy):
         SqlFile.write(GetFileHeader(PURPOSE, GEO_DB_PATH, FEATURE_CLASS, SqlFile.name))
 
         i = 0
-        for Row in TrimbleUtility.GetFeatureClassRows(arcpy, FEATURE_CLASS):
+        for Row in TrimbleUtility.GetFeatureClassRows(FEATURE_CLASS):
             PySampleDateTime = Row['CreationDateTimeLocal']
 
             # A record without a creation datetime is not a valid
@@ -402,7 +368,7 @@ def ExportLoonsJoined(arcpy):
         Error = 'Error in function ExportLoonsJoined:' + str(e)
         arcpy.AddMessage(Error)
 
-def ExportWaterSampleJoined(arcpy):
+def ExportWaterSampleJoined():
     """
     Translates the data in the Water_Sample_Joined featureclass into a
     script of SQL insert queries that can be executed on the
@@ -449,7 +415,7 @@ def ExportWaterSampleJoined(arcpy):
 
         SqlFile.write("BEGIN TRANSACTION -- COMMIT ROLLBACK\n\n")
 
-        for Row in TrimbleUtility.GetFeatureClassRows(arcpy, FEATURE_CLASS):
+        for Row in TrimbleUtility.GetFeatureClassRows(FEATURE_CLASS):
             PySampleDateTime = Row['CreationDateTimeLocal']
 
             # A record without a creation datetime is not a valid
@@ -520,7 +486,7 @@ def ExportWaterSampleJoined(arcpy):
         Error = 'Error in function ExportWaterSampleJoined: ' + str(e)
         arcpy.AddMessage(Error)
 
-def ExportMonumentJoined(arcpy):
+def ExportMonumentJoined():
     """
     Translates the data in the Monument featureclass into a
     script of SQL insert statements that can be executed on the
@@ -552,7 +518,7 @@ def ExportMonumentJoined(arcpy):
 
         InsertStatements = ''
 
-        for Row in TrimbleUtility.GetFeatureClassRows(arcpy, FEATURE_CLASS):
+        for Row in TrimbleUtility.GetFeatureClassRows(FEATURE_CLASS):
             PySampleDateTime = Row['CreationDateTimeLocal']
 
             PondName = Row['LakeNum']
