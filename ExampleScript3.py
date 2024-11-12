@@ -27,7 +27,7 @@ def Transform():
     GEO_DB_PATH = "C:/fake_dir/fake_1.gdb"
     arcpy.env.workspace = GEO_DB_PATH
 
-    TrimbleGeoDBToDatabase.ExportContinuousJoined(Continuous.DEPLOYMENT_INSERT, '2023-09-08', '2023-09-25', csv_reader)
+    TrimbleGeoDBToDatabase.ExportContinuousJoined(Continuous.DEPLOYMENT_INSERT, '2023-09-08', '2023-09-25')
 
     # Retrieval processing
 
