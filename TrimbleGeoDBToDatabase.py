@@ -81,7 +81,7 @@ def ExportSecchiJoined():
             else:
                 SecchiDepth = 'NULL'
 
-            if Row['Is_the_Secchi_on_the_lake_bottom_'] == "Yes":
+            if Row['OnBottom'] == "Yes":
                 SecchiOnBottom = '1'
             else:
                 SecchiOnBottom = '0'
@@ -305,6 +305,13 @@ def ExportLoonsJoined():
             Species = str(Row['Loon_Species'])
             NumAdults = str(Row['a___of_Adults'])
             NumYoung = str(Row['a___of_Young'])
+            OnWater = str(Row['On_Water_'])
+
+            if OnWater == "Yes":
+                VegType = "WATER"
+            elif OnWater is None:
+                VegType = ""
+
             DetectionType = str(Row['Identification_Method'])
             Latitude = str(Row['YCurrentMapCS'])
             Longitude = str(Row['XCurrentMapCS'])
@@ -322,8 +329,9 @@ def ExportLoonsJoined():
 
             # Write the insert query to file
             CommentStr = (",NULL,'" if Comments == '' else ",'" + Comments + "','")
-            InsertQueries = (InsertQueries + "                INSERT INTO " + TABLE_NAME + "(PONDNAME,SAMPLEDATE,SPECIES,NUM_ADULTS,NUM_YOUNG,DETECTION_TYPE,LATITUDE,LONGITUDE,COMMENTS,SOURCE) VALUES("  +
-                             "'"  + PondName + "','" + SampleDate + "','" + Species + "'," + NumAdults + "," + NumYoung + ",'" + DetectionType + "'," + Latitude + "," + Longitude +
+            VegTypeStr = (",NULL," if VegType == '' else ",'" + VegType + "',")
+            InsertQueries = (InsertQueries + "                INSERT INTO " + TABLE_NAME + "(PONDNAME,SAMPLEDATE,SPECIES,NUM_ADULTS,NUM_YOUNG,DETECTION_TYPE,VEG_TYPE,LATITUDE,LONGITUDE,COMMENTS,SOURCE) VALUES("  +
+                             "'"  + PondName + "','" + SampleDate + "','" + Species + "'," + NumAdults + "," + NumYoung + ",'" + DetectionType + "'" + VegTypeStr + Latitude + "," + Longitude +
                              CommentStr + Source + "');\n")
 
             i = i + 1
