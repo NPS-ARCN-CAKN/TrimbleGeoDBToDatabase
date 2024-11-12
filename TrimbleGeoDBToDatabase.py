@@ -73,7 +73,7 @@ def ExportSecchiJoined():
             else:
                 SecchiDepth = 'NULL'
 
-            if Row['Is_the_Secchi_on_the_lake_bottom_'] == "Yes":
+            if Row['OnBottom'] == "Yes":
                 SecchiOnBottom = '1'
             else:
                 SecchiOnBottom = '0'
