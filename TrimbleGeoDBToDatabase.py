@@ -38,15 +38,11 @@ def ExportSecchiJoined():
 
         FEATURE_CLASS = "Secchi_Joined"
 
-        TARGET_FILE_NAME = SOURCE_FILE_NAME + '_' + FEATURE_CLASS + '_Insert.sql'
+        DatetimeStr = TrimbleUtility.GetCurrentDatetimeStr()
+        TARGET_FILE_NAME = SOURCE_FILE_NAME + '_' + FEATURE_CLASS + '_Insert_' + DatetimeStr +'.sql'
 
         SqlFilePath = os.path.dirname(arcpy.env.workspace) + '/' + TARGET_FILE_NAME
 
-        # if the SQL file exists already then delete it
-        if os.path.exists(SqlFilePath):
-            arcpy.AddMessage("File exists: " + SqlFilePath)
-            os.remove(SqlFilePath)
-            arcpy.AddMessage("Deleted file: " + TARGET_FILE_NAME)
         SqlFile = open(SqlFilePath,'a')
 
         # We need to ensure all the lakes exist before we can create
@@ -163,15 +159,11 @@ def ExportDepthJoined():
 
         FEATURE_CLASS = "Depth_Joined"
 
-        TARGET_FILE_NAME = SOURCE_FILE_NAME + '_' + FEATURE_CLASS + '_Insert.sql'
+        DatetimeStr = TrimbleUtility.GetCurrentDatetimeStr()
+        TARGET_FILE_NAME = SOURCE_FILE_NAME + '_' + FEATURE_CLASS + '_Insert_' + DatetimeStr +'.sql'
 
         SqlFilePath = os.path.dirname(arcpy.env.workspace) + '/' + TARGET_FILE_NAME
 
-        # if the SQL file exists already then delete it
-        if os.path.exists(SqlFilePath):
-            arcpy.AddMessage("File exists: " + SqlFilePath)
-            os.remove(SqlFilePath)
-            arcpy.AddMessage("Deleted file: " + TARGET_FILE_NAME)
         SqlFile = open(SqlFilePath,'a')
 
         # Create the first half of the SQL insert query
@@ -262,14 +254,11 @@ def ExportLoonsJoined():
         FEATURE_CLASS = "Loons_Joined"
         TABLE_NAME = "tblLoons"
 
-        TARGET_FILE_NAME = SOURCE_FILE_NAME + '_' + FEATURE_CLASS + '_Insert.sql'
+        DatetimeStr = TrimbleUtility.GetCurrentDatetimeStr()
+        TARGET_FILE_NAME = SOURCE_FILE_NAME + '_' + FEATURE_CLASS + '_Insert_' + DatetimeStr +'.sql'
+
         SqlFilePath = os.path.dirname(arcpy.env.workspace) + '/' + TARGET_FILE_NAME
 
-        # if the SQL file exists already then delete it
-        if os.path.exists(SqlFilePath):
-            arcpy.AddMessage("File exists: " + SqlFilePath)
-            os.remove(SqlFilePath)
-            arcpy.AddMessage("Deleted file: " + TARGET_FILE_NAME)
         SqlFile = open(SqlFilePath,'a')
 
         # This will hold the insert queries as they are built
@@ -384,14 +373,11 @@ def ExportWaterSampleJoined():
         FEATURE_CLASS = "Water_Sample_Joined"
         TABLE_NAME = "tblWaterSamples"
 
-        TARGET_FILE_NAME = SOURCE_FILE_NAME + '_' + FEATURE_CLASS + '_Insert.sql'
+        DatetimeStr = TrimbleUtility.GetCurrentDatetimeStr()
+        TARGET_FILE_NAME = SOURCE_FILE_NAME + '_' + FEATURE_CLASS + '_Insert_' + DatetimeStr +'.sql'
+
         SqlFilePath = os.path.dirname(arcpy.env.workspace) + '/' + TARGET_FILE_NAME
 
-        # if the SQL file exists already then delete it
-        if os.path.exists(SqlFilePath):
-            arcpy.AddMessage("File exists: " + SqlFilePath)
-            os.remove(SqlFilePath)
-            arcpy.AddMessage("Deleted file: " + TARGET_FILE_NAME)
         SqlFile = open(SqlFilePath,'a')
 
         # Create the first half of the SQL insert query
@@ -502,14 +488,11 @@ def ExportMonumentJoined():
         FEATURE_CLASS = "Monument"
         TABLE_NAME = "tblMonuments"
 
-        TARGET_FILE_NAME = SOURCE_FILE_NAME + '_' + FEATURE_CLASS + '_Insert.sql'
+        DatetimeStr = TrimbleUtility.GetCurrentDatetimeStr()
+        TARGET_FILE_NAME = SOURCE_FILE_NAME + '_' + FEATURE_CLASS + '_Insert_' + DatetimeStr +'.sql'
+
         SqlFilePath = os.path.dirname(arcpy.env.workspace) + '/' + TARGET_FILE_NAME
 
-        # if the SQL file exists already then delete it
-        if os.path.exists(SqlFilePath):
-            arcpy.AddMessage("File exists: " + SqlFilePath)
-            os.remove(SqlFilePath)
-            arcpy.AddMessage("Deleted file: " + TARGET_FILE_NAME)
         SqlFile = open(SqlFilePath,'a')
 
         # Write the header info to file
