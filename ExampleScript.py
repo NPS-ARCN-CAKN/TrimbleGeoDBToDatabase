@@ -8,29 +8,29 @@
 
 # Example script 'script.py':
 
-# import arcpy
-# import TrimbleGeoDBToDatabase
-# import TestTrimbleGeoDB
-#
-# def TransformGeoDB():
-#     GEO_DB_PATH = "C:/fake_dir/fake.gdb"
-#     arcpy.env.workspace = GEO_DB_PATH
-#
-#     # Transform and write SQL 'INSERT' statements.
-#     TrimbleGeoDBToDatabase.ExportSecchiJoined()
-#
-#     # Find duplicate keys in records; collect duplicates in a
-#     # dictionary.
-#     # 'd' is a dictionary.
-#     d = TestTrimbleGeoDB.FindDuplicateSecchiKeys()
-#     print('Secchi: ', d)
-#
-# if __name__ == "__main__":
-#     TransformGeoDB()
-
 # Executing 'script.py' from ArcGIS Pro commandline:
 
 # >c:\Progra~1\ArcGIS\Pro\bin\Python\scripts\propy.bat script.py
 
 # The output is written to the same directory as the referenced
-# geodatabase in the 'GEO_DB_PATH' argument supplied to each function.
+# geodatabase by the 'GEO_DB_PATH' variable.
+
+import arcpy
+import TrimbleGeoDBToDatabase
+import TestTrimbleGeoDB
+
+def TransformGeoDB():
+    GEO_DB_PATH = "C:/fake_dir/fake.gdb"
+    arcpy.env.workspace = GEO_DB_PATH
+
+    # Transform and write SQL 'INSERT' statements.
+    TrimbleGeoDBToDatabase.ExportSecchiJoined()
+
+    # Find duplicate keys in records; collect duplicates in a
+    # dictionary.
+    # 'd' is a dictionary.
+    d = TestTrimbleGeoDB.FindDuplicateSecchiKeys()
+    print('Secchi: ', d)
+
+if __name__ == "__main__":
+    TransformGeoDB()
