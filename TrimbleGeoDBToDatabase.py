@@ -17,7 +17,15 @@ import arcpy
 import getpass
 import datetime
 import os
+import csv
 import TrimbleUtility
+
+from enum import Enum
+
+class Continuous(Enum):
+    DEPLOYMENT_INSERT = 1
+    DEPLOYMENT_UPDATE = 2
+    RETRIEVAL_UPDATE = 3
 
 def ExportSecchiJoined():
     """
@@ -38,15 +46,11 @@ def ExportSecchiJoined():
 
         FEATURE_CLASS = "Secchi_Joined"
 
-        TARGET_FILE_NAME = SOURCE_FILE_NAME + '_' + FEATURE_CLASS + '_Insert.sql'
+        DatetimeStr = TrimbleUtility.GetCurrentDatetimeStr()
+        TARGET_FILE_NAME = SOURCE_FILE_NAME + '_' + FEATURE_CLASS + '_Insert_' + DatetimeStr +'.sql'
 
         SqlFilePath = os.path.dirname(arcpy.env.workspace) + '/' + TARGET_FILE_NAME
 
-        # if the SQL file exists already then delete it
-        if os.path.exists(SqlFilePath):
-            arcpy.AddMessage("File exists: " + SqlFilePath)
-            os.remove(SqlFilePath)
-            arcpy.AddMessage("Deleted file: " + TARGET_FILE_NAME)
         SqlFile = open(SqlFilePath,'a')
 
         # We need to ensure all the lakes exist before we can create
@@ -77,7 +81,7 @@ def ExportSecchiJoined():
             else:
                 SecchiDepth = 'NULL'
 
-            if Row['Is_the_Secchi_on_the_lake_bottom_'] == "Yes":
+            if Row['OnBottom'] == "Yes":
                 SecchiOnBottom = '1'
             else:
                 SecchiOnBottom = '0'
@@ -163,15 +167,11 @@ def ExportDepthJoined():
 
         FEATURE_CLASS = "Depth_Joined"
 
-        TARGET_FILE_NAME = SOURCE_FILE_NAME + '_' + FEATURE_CLASS + '_Insert.sql'
+        DatetimeStr = TrimbleUtility.GetCurrentDatetimeStr()
+        TARGET_FILE_NAME = SOURCE_FILE_NAME + '_' + FEATURE_CLASS + '_Insert_' + DatetimeStr +'.sql'
 
         SqlFilePath = os.path.dirname(arcpy.env.workspace) + '/' + TARGET_FILE_NAME
 
-        # if the SQL file exists already then delete it
-        if os.path.exists(SqlFilePath):
-            arcpy.AddMessage("File exists: " + SqlFilePath)
-            os.remove(SqlFilePath)
-            arcpy.AddMessage("Deleted file: " + TARGET_FILE_NAME)
         SqlFile = open(SqlFilePath,'a')
 
         # Create the first half of the SQL insert query
@@ -262,14 +262,11 @@ def ExportLoonsJoined():
         FEATURE_CLASS = "Loons_Joined"
         TABLE_NAME = "tblLoons"
 
-        TARGET_FILE_NAME = SOURCE_FILE_NAME + '_' + FEATURE_CLASS + '_Insert.sql'
+        DatetimeStr = TrimbleUtility.GetCurrentDatetimeStr()
+        TARGET_FILE_NAME = SOURCE_FILE_NAME + '_' + FEATURE_CLASS + '_Insert_' + DatetimeStr +'.sql'
+
         SqlFilePath = os.path.dirname(arcpy.env.workspace) + '/' + TARGET_FILE_NAME
 
-        # if the SQL file exists already then delete it
-        if os.path.exists(SqlFilePath):
-            arcpy.AddMessage("File exists: " + SqlFilePath)
-            os.remove(SqlFilePath)
-            arcpy.AddMessage("Deleted file: " + TARGET_FILE_NAME)
         SqlFile = open(SqlFilePath,'a')
 
         # This will hold the insert queries as they are built
@@ -308,6 +305,13 @@ def ExportLoonsJoined():
             Species = str(Row['Loon_Species'])
             NumAdults = str(Row['a___of_Adults'])
             NumYoung = str(Row['a___of_Young'])
+            OnWater = str(Row['On_Water_'])
+
+            if OnWater == "Yes":
+                VegType = "WATER"
+            elif OnWater is None:
+                VegType = ""
+
             DetectionType = str(Row['Identification_Method'])
             Latitude = str(Row['YCurrentMapCS'])
             Longitude = str(Row['XCurrentMapCS'])
@@ -325,8 +329,9 @@ def ExportLoonsJoined():
 
             # Write the insert query to file
             CommentStr = (",NULL,'" if Comments == '' else ",'" + Comments + "','")
-            InsertQueries = (InsertQueries + "                INSERT INTO " + TABLE_NAME + "(PONDNAME,SAMPLEDATE,SPECIES,NUM_ADULTS,NUM_YOUNG,DETECTION_TYPE,LATITUDE,LONGITUDE,COMMENTS,SOURCE) VALUES("  +
-                             "'"  + PondName + "','" + SampleDate + "','" + Species + "'," + NumAdults + "," + NumYoung + ",'" + DetectionType + "'," + Latitude + "," + Longitude +
+            VegTypeStr = (",NULL," if VegType == '' else ",'" + VegType + "',")
+            InsertQueries = (InsertQueries + "                INSERT INTO " + TABLE_NAME + "(PONDNAME,SAMPLEDATE,SPECIES,NUM_ADULTS,NUM_YOUNG,DETECTION_TYPE,VEG_TYPE,LATITUDE,LONGITUDE,COMMENTS,SOURCE) VALUES("  +
+                             "'"  + PondName + "','" + SampleDate + "','" + Species + "'," + NumAdults + "," + NumYoung + ",'" + DetectionType + "'" + VegTypeStr + Latitude + "," + Longitude +
                              CommentStr + Source + "');\n")
 
             i = i + 1
@@ -384,14 +389,11 @@ def ExportWaterSampleJoined():
         FEATURE_CLASS = "Water_Sample_Joined"
         TABLE_NAME = "tblWaterSamples"
 
-        TARGET_FILE_NAME = SOURCE_FILE_NAME + '_' + FEATURE_CLASS + '_Insert.sql'
+        DatetimeStr = TrimbleUtility.GetCurrentDatetimeStr()
+        TARGET_FILE_NAME = SOURCE_FILE_NAME + '_' + FEATURE_CLASS + '_Insert_' + DatetimeStr +'.sql'
+
         SqlFilePath = os.path.dirname(arcpy.env.workspace) + '/' + TARGET_FILE_NAME
 
-        # if the SQL file exists already then delete it
-        if os.path.exists(SqlFilePath):
-            arcpy.AddMessage("File exists: " + SqlFilePath)
-            os.remove(SqlFilePath)
-            arcpy.AddMessage("Deleted file: " + TARGET_FILE_NAME)
         SqlFile = open(SqlFilePath,'a')
 
         # Create the first half of the SQL insert query
@@ -502,14 +504,11 @@ def ExportMonumentJoined():
         FEATURE_CLASS = "Monument"
         TABLE_NAME = "tblMonuments"
 
-        TARGET_FILE_NAME = SOURCE_FILE_NAME + '_' + FEATURE_CLASS + '_Insert.sql'
+        DatetimeStr = TrimbleUtility.GetCurrentDatetimeStr()
+        TARGET_FILE_NAME = SOURCE_FILE_NAME + '_' + FEATURE_CLASS + '_Insert_' + DatetimeStr +'.sql'
+
         SqlFilePath = os.path.dirname(arcpy.env.workspace) + '/' + TARGET_FILE_NAME
 
-        # if the SQL file exists already then delete it
-        if os.path.exists(SqlFilePath):
-            arcpy.AddMessage("File exists: " + SqlFilePath)
-            os.remove(SqlFilePath)
-            arcpy.AddMessage("Deleted file: " + TARGET_FILE_NAME)
         SqlFile = open(SqlFilePath,'a')
 
         # Write the header info to file
@@ -557,6 +556,187 @@ def ExportMonumentJoined():
         Error = 'Error in function ExportMonumentJoined: ' + str(e)
         arcpy.AddMessage(Error)
 
+def ExportContinuousJoined(ContinuousType : Continuous,
+                           fromDate : str, toDate : str,
+                           DeployedCSV : csv.DictReader = None,
+                           KeepUpdateNotes = False):
+    """
+    Translates the data in the Deployment/Retrieval featureclass into a
+    script of SQL update statements that can be executed on the
+    AK_ShallowLakes database.
+
+    Parameters:
+    - ContinuousType = Type of continuous data. DEPLOYMENT_INSERT or
+      DEPLOYMENT_UPDATE or RETRIEVAL_UPDATE (see 'Continuous'
+      enumeration).
+      - This code assumes that:
+        - The deployment's have SQL INSERT or UPDATE statements.
+          - Deployment records are always INSERTed first into the
+            database.
+          - These deployment records are then UPDATEd in their
+            deployment or retrieval columns.
+            - The deployment updates only update on the lat/long and
+              possibly the notes column.
+        - The RETRIEVAL's have SQL UPDATE statements that include the
+          retrieval date, retrieval time, lat/long, and possibly the
+          notes column.
+    - fromDate = this is the start date, from the feature class table
+      for the creation of the SQL INSERT/UPDATE statements.
+    - toDate = this is the end date, from the feature class table for
+      the creation of the SQL INSERT/UPDATE statements.
+    - DeployedCSV = A dictionary of class type csv.DictReader.
+      - Required for when the 'ContinuousType' arguement's value is
+        'Continuous.RETRIEVAL_UPDATE' or
+        'Continuous.DEPLOYMENT_UPDATE'.
+      - This reader is comprised of the DEPLOYED 'SiteName' and
+        'DateDeployed' table values whose records must be updated in
+        the retrieval columns for these particular deployed sites.
+        That is, the site name and deployement date, togeether are
+        unique.
+    - KeepUpdateNotes = Keep update notes? If false (default), comment
+      out the 'RetrievalNotes' or 'DeploymentNotes' in the SQL UPDATE
+      statement's 'SET' clause. Otherwise, keep the comment column.
+      - Setting this parameter's default to 'False' ensures that the
+        column 'RetrievalNotes' or 'DeploymentNotes' is in an outputed
+        UPDATE statement, but is commented out, so this statement's
+        execution does not overwrite previously entered retrieval or
+        deployment notes for this record.
+    """
+    try:
+
+        def CSVDictToKeyedDict(csvDict : csv.DictReader):
+            d = {}
+            for row in csvDict:
+                d[row['SiteName']] = row['DateDeployed']
+
+            return d
+
+        if ContinuousType is Continuous.DEPLOYMENT_INSERT:
+            AssertDeployed(DeployedCSV)
+            FEATURE_CLASS = "Deployment_Joined"
+        elif ContinuousType is Continuous.DEPLOYMENT_UPDATE:
+            AssertRetrieved(DeployedCSV)
+            FEATURE_CLASS = "Deployment_Joined"
+            mapDeployment = CSVDictToKeyedDict(DeployedCSV)
+        elif ContinuousType is Continuous.RETRIEVAL_UPDATE:
+            AssertRetrieved(DeployedCSV)
+            FEATURE_CLASS = "Retrieval_Joined"
+            mapDeployment = CSVDictToKeyedDict(DeployedCSV)
+        else:
+            raise Exception("Value of 'ContinuousType' parameter is not valid.")
+
+        GEO_DB_PATH = arcpy.env.workspace
+
+        AssertGeoDB(GEO_DB_PATH)
+
+        SOURCE_FILE_NAME = os.path.basename(GEO_DB_PATH) # Extract just the filename from the path.
+
+        TABLE_NAME = "tblContinuousDataDeployments"
+
+        DatetimeStr = TrimbleUtility.GetCurrentDatetimeStr()
+
+        if ContinuousType is Continuous.DEPLOYMENT_INSERT:
+            SQLOperationStr = "_Insert_"
+        elif ContinuousType is Continuous.DEPLOYMENT_UPDATE:
+            SQLOperationStr = "_Update_"
+        elif ContinuousType is Continuous.RETRIEVAL_UPDATE:
+            SQLOperationStr = "_Update_"
+
+        TARGET_FILE_NAME = SOURCE_FILE_NAME + '_' + FEATURE_CLASS + SQLOperationStr + fromDate + '_to_' + toDate + '_' + DatetimeStr + '.sql'
+
+        SqlFilePath = os.path.dirname(arcpy.env.workspace) + '/' + TARGET_FILE_NAME
+
+        SqlFile = open(SqlFilePath,'a')
+
+        # Write the header info to file
+        PURPOSE = "Transfer " + FEATURE_CLASS + " data from the field Trimble data collection application to the AK_ShallowLakes monitoring SQL Server database.\n"
+        SqlFile.write(GetFileHeader(PURPOSE, GEO_DB_PATH, FEATURE_CLASS, SqlFile.name))
+
+        SQLStatements = ''
+
+        for Row in TrimbleUtility.GetFeatureClassRows(FEATURE_CLASS):
+            PySampleDateTime = Row['CreationDateTimeLocal']
+
+            # The site name and date deployed columns comprise the
+            # primary key of the table tblContinuousDataDeployments.
+            SiteName = Row['LakeNum']
+
+            if ContinuousType is Continuous.DEPLOYMENT_INSERT:
+                DateDeployed = TrimbleUtility.GetDateTime(PySampleDateTime, 'd')
+
+                if DateDeployed >= fromDate and DateDeployed <= toDate:
+                    TimeDeployed = TrimbleUtility.GetDateTime(PySampleDateTime, 't')
+                    DeploymentType = Row['Deployment_Type']
+                    DeployLatitude = str(Row['YCurrentMapCS'])
+                    DeployLongitude = str(Row['XCurrentMapCS'])
+                    DeploymentNotes = Row['Comments']
+
+                    DeploymentNotesStr = (', NULL' if DeploymentNotes.strip() == '' else ", '" + DeploymentNotes + "'")
+                    DeploymentTypeStr = (', NULL' if DeploymentType is None else ", '" + DeploymentType + "'")
+
+                    SQLStatements += ('INSERT INTO dbo.' + TABLE_NAME + "\n" +
+                                      "([SiteName] ,[DateDeployed] ,[TimeDeployed] ,[DeploymentType] ,[DeployLatitude] ,[DeployLongitude] ,[DeploymentNotes])\n" +
+                                      "VALUES (" +
+                                      "'" + SiteName + "', '" + DateDeployed + "', '" + TimeDeployed + "'" + DeploymentTypeStr + ", " + DeployLatitude + ", " + DeployLongitude + DeploymentNotesStr + ")\n\n")
+
+            elif ContinuousType is Continuous.DEPLOYMENT_UPDATE:
+                if SiteName in mapDeployment:
+                    DateDeployed = TrimbleUtility.GetDateTime(PySampleDateTime, 'd')
+
+                    if DateDeployed >= fromDate and DateDeployed <= toDate:
+                        TimeDeployed = TrimbleUtility.GetDateTime(PySampleDateTime, 't')
+                        DeployLatitude = str(Row['YCurrentMapCS'])
+                        DeployLongitude = str(Row['XCurrentMapCS'])
+                        DeploymentNotes = Row['Comments']
+
+                        DateDeployed = mapDeployment[SiteName]
+
+                        DeploymentNotesStr = ('NULL' if DeploymentNotes.strip() == '' else "'" + DeploymentNotes + "'")
+
+                        SQLStatements += ('UPDATE dbo.' + TABLE_NAME + "\n" +
+                                          'SET [DeployLatitude] = ' + DeployLatitude + ",\n")
+                        SQLStatements += ('    [DeployLongitude] = ' + DeployLongitude + ",\n" +
+                                          '    [DeploymentNotes] = ' + DeploymentNotesStr + "\n"
+                                          if KeepUpdateNotes
+                                          else
+                                          '    [DeployLongitude] = ' + DeployLongitude + "\n" +
+                                          '--  [DeploymentNotes] = ' + DeploymentNotesStr + "\n")
+
+                        SQLStatements +=  "WHERE SiteName = '" + SiteName + "' AND DateDeployed = '" + DateDeployed + "'\n\n"
+
+            elif ContinuousType is Continuous.RETRIEVAL_UPDATE:
+                if SiteName in mapDeployment:
+                    DateRetrieved = TrimbleUtility.GetDateTime(PySampleDateTime, 'd')
+
+                    if DateRetrieved >= fromDate and DateRetrieved <= toDate:
+                        TimeRetrieved = TrimbleUtility.GetDateTime(PySampleDateTime, 't')
+                        RetrieveLatitude = str(Row['YCurrentMapCS'])
+                        RetrieveLongitude = str(Row['XCurrentMapCS'])
+                        RetrievalNotes = Row['Comments']
+
+                        DateDeployed = mapDeployment[SiteName]
+
+                        RetrievalNotesStr = ('NULL' if RetrievalNotes.strip() == '' else "'" + RetrievalNotes + "'")
+
+                        SQLStatements += ('UPDATE dbo.' + TABLE_NAME + "\n" +
+                                          "SET [DateRetrieved] = '" + DateRetrieved + "',\n" +
+                                          "    [TimeRetrieved] = '" + TimeRetrieved + "',\n" +
+                                          '    [RetrieveLatitude] = ' + RetrieveLatitude + ",\n")
+                        SQLStatements += ('    [RetrieveLongitude] = ' + RetrieveLongitude + ",\n" +
+                                          '    [RetrievalNotes] = ' + RetrievalNotesStr + "\n"
+                                          if KeepUpdateNotes
+                                          else
+                                          '    [RetrieveLongitude] = ' + RetrieveLongitude + "\n" +
+                                          '--  [RetrievalNotes] = ' + RetrievalNotesStr + "\n")
+
+                        SQLStatements +=  "WHERE SiteName = '" + SiteName + "' AND DateDeployed = '" + DateDeployed + "'\n\n"
+
+        SqlFile.write(WrapSQLStatementsInTransaction(SQLStatements))
+
+    except Exception as e:
+        Error = 'Error in function ExportContinuousJoined: ' + str(e)
+        arcpy.AddMessage(Error)
+
 def GetFileHeader(Purpose, GeoDBPath, FeatureClass, SQLFileName):
     """
     Standard header information to put in each sql script.
@@ -596,3 +776,9 @@ def WrapSQLStatementsInTransaction(SQLStatements):
 
 def AssertGeoDB(GEO_DB_PATH):
     assert GEO_DB_PATH is not None, "arcpy.env.workspace must be a geodatabase path string!"
+
+def AssertRetrieved(DeployedCSV):
+    assert isinstance(DeployedCSV, csv.DictReader), "Deployment or retrieval update export requires a CSV.DictReader object."
+
+def AssertDeployed(DeployedCSV):
+    assert DeployedCSV is None, "Deployed update export requires 'DeployedCSV' argument to be 'None'."

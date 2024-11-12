@@ -8,6 +8,7 @@
 # This module contains utility functions that help the main program.
 
 import arcpy
+import datetime
 
 def GetDateTime(PyDateTime, DateTimeType):
     if DateTimeType == 'd':
@@ -18,6 +19,10 @@ def GetDateTime(PyDateTime, DateTimeType):
         DateTime = PyDateTime.strftime('%Y-%m-%d %H:%M:%S')
 
     return DateTime
+
+def GetCurrentDatetimeStr():
+    now = datetime.datetime.now()
+    return now.strftime('%Y-%m-%dT%H.%M.%S')
 
 def GetFeatureClassRows(FeatureClassName):
     """
