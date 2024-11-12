@@ -11,7 +11,7 @@
 # >c:\Progra~1\ArcGIS\Pro\bin\Python\scripts\propy.bat ExampleScript2.py
 
 # The output is written to the same directory as the referenced
-# geodatabase in the 'GEO_DB_PATH' argument supplied to each function.
+# geodatabase by the 'GEO_DB_PATH' variable.
 
 # Example script 'ExampleScript2.py':
 
