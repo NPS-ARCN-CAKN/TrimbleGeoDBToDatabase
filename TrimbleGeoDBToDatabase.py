@@ -206,13 +206,13 @@ def ExportDepthJoined():
             PondName = str(Row['LakeNum'])
             SampleDate = TrimbleUtility.GetDateTime(PySampleDateTime, 'd')
             GPS_Time = TrimbleUtility.GetDateTime(PySampleDateTime, 't')
-            Latitude = str(Row['YCurrentMapCS'])
-            Longitude = str(Row['XCurrentMapCS'])
-            Depth = str(Row['Depth_in_meters'])
+            Latitude = str(round(Row['YCurrentMapCS'], 6))
+            Longitude = str(round(Row['XCurrentMapCS'], 6))
+            Depth = str(round(Row['Depth_in_meters'], 1))
 
             CommentsDepths = Row['Comment'].strip()
 
-            DataFile = SOURCE_FILE_NAME
+            DataFile = str(Row['Datafile'])
             Source = SOURCE_FILE_NAME
 
             # Validation query
@@ -313,8 +313,8 @@ def ExportLoonsJoined():
                 VegType = ""
 
             DetectionType = str(Row['Identification_Method'])
-            Latitude = str(Row['YCurrentMapCS'])
-            Longitude = str(Row['XCurrentMapCS'])
+            Latitude = str(round(Row['YCurrentMapCS'], 6))
+            Longitude = str(round(Row['XCurrentMapCS'], 6))
             Comments = Row['Loon_Comments'].strip()
             Source = SOURCE_FILE_NAME
 
@@ -522,8 +522,8 @@ def ExportMonumentJoined():
 
             PondName = Row['LakeNum']
             MonumentDate = TrimbleUtility.GetDateTime(PySampleDateTime, 'd')
-            LatitudeNAD83 = str(Row['YCurrentMapCS'])
-            LongitudeNAD83 = str(Row['XCurrentMapCS'])
+            LatitudeNAD83 = str(round(Row['YCurrentMapCS'], 6))
+            LongitudeNAD83 = str(round(Row['XCurrentMapCS'], 6))
             Elevation = str(Row['FeatureHeight'])
             LocType = Row['MonType']
             LocMaterial = Row['MonType']
@@ -685,8 +685,8 @@ def ExportContinuousJoined(ContinuousType : Continuous,
 
                     if DateDeployed >= fromDate and DateDeployed <= toDate:
                         TimeDeployed = TrimbleUtility.GetDateTime(PySampleDateTime, 't')
-                        DeployLatitude = str(Row['YCurrentMapCS'])
-                        DeployLongitude = str(Row['XCurrentMapCS'])
+                        DeployLatitude = str(round(Row['YCurrentMapCS'], 6))
+                        DeployLongitude = str(round(Row['XCurrentMapCS'], 6))
                         DeploymentNotes = Row['Comments']
 
                         DateDeployed = mapDeployment[SiteName]
@@ -710,8 +710,8 @@ def ExportContinuousJoined(ContinuousType : Continuous,
 
                     if DateRetrieved >= fromDate and DateRetrieved <= toDate:
                         TimeRetrieved = TrimbleUtility.GetDateTime(PySampleDateTime, 't')
-                        RetrieveLatitude = str(Row['YCurrentMapCS'])
-                        RetrieveLongitude = str(Row['XCurrentMapCS'])
+                        RetrieveLatitude = str(round(Row['YCurrentMapCS'], 6))
+                        RetrieveLongitude = str(round(Row['XCurrentMapCS'], 6))
                         RetrievalNotes = Row['Comments']
 
                         DateDeployed = mapDeployment[SiteName]
