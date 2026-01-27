@@ -329,7 +329,14 @@ def CalculatePointGeometry(TargetFeatureClassName, XFieldName, YFieldName):
     """
     From the Python docs:
     - "The coordinate system of the input features is used by default."
+    However:
+    - By specifiying the coordinate format as decimal degrees, we
+      ensure that the target feature class geographic coordinate
+      system is used, rather than the projected coordinate system.
+      - This is important when we have a feature class that has, for
+        example, a 'NAD83 (2011) Alaska Albers (meters)' CRS.
     """
     arcpy.management.CalculateGeometryAttributes(TargetFeatureClassName,
                                                  [[XFieldName, "POINT_X"],
-                                                  [YFieldName, "POINT_Y"]])
+                                                  [YFieldName, "POINT_Y"]],
+                                                 coordinate_format="DD")
