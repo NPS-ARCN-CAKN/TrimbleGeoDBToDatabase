@@ -82,7 +82,7 @@ def GetKeptFieldsFromPathfinder(FeatureType):
                       "SampleNum",            #Sample_Number__A__B__C_
                       "SampCom",              #Comment
 
-                      "Horiz_Prec",           #HorizEstAcc
+                      "Horz_Prec",            #HorizEstAcc
                       "Vert_Prec",            #VertEstAcc
                       "Corr_Type",            #CorrStatus
                       "GNSS_Heigh",           #FeatureHeight
@@ -98,7 +98,7 @@ def GetKeptFieldsFromPathfinder(FeatureType):
         KeepFields = ["Depth_m",              #Depth_in_meters
                       "DepthCom",             #Comment
 
-                      "Horiz_Prec",           #HorizEstAcc
+                      "Horz_Prec",            #HorizEstAcc
                       "Vert_Prec",            #VertEstAcc
                       "Corr_Type",            #CorrStatus
                       "GNSS_Heigh",           #FeatureHeight
@@ -116,7 +116,7 @@ def GetKeptFieldsFromPathfinder(FeatureType):
                       "OnBottom",             #Is_the_Secchi_on_the_lake_bottom_
                       "SeccCom",              #Comment
 
-                      "Horiz_Prec",           #HorizEstAcc
+                      "Horz_Prec",            #HorizEstAcc
                       "Vert_Prec",            #VertEstAcc
                       "Corr_Type",            #CorrStatus
                       "GNSS_Heigh",           #FeatureHeight
@@ -136,7 +136,7 @@ def GetKeptFieldsFromPathfinder(FeatureType):
                       "Identifica",           #Identification_Method
                       "Comments",             #Loon_Comments
 
-                      "Horiz_Prec",           #HorizEstAcc
+                      "Horz_Prec",            #HorizEstAcc
                       "Vert_Prec",            #VertEstAcc
                       "Corr_Type",            #CorrStatus
                       "GNSS_Heigh",           #FeatureHeight
@@ -153,7 +153,7 @@ def GetKeptFieldsFromPathfinder(FeatureType):
                       "DeployType",           #Deployment_Type
                       "DepCom",               #Comments
 
-                      "Horiz_Prec",           #HorizEstAcc
+                      "Horz_Prec",            #HorizEstAcc
                       "Vert_Prec",            #VertEstAcc
                       "Corr_Type",            #CorrStatus
                       "GNSS_Heigh",           #FeatureHeight
@@ -170,7 +170,7 @@ def GetKeptFieldsFromPathfinder(FeatureType):
                       "DeployType",           #Deployment_Type
                       "RetCom",               #Comments
 
-                      "Horiz_Prec",           #HorizEstAcc
+                      "Horz_Prec",            #HorizEstAcc
                       "Vert_Prec",            #VertEstAcc
                       "Corr_Type",            #CorrStatus
                       "GNSS_Heigh",           #FeatureHeight
@@ -184,7 +184,7 @@ def GetKeptFieldsFromPathfinder(FeatureType):
 
     elif FeatureType == Feature.MONUMENT:
         KeepFields = [
-                      "Horiz_Prec",           #HorizEstAcc
+                      "Horz_Prec",            #HorizEstAcc
                       "Vert_Prec",            #VertEstAcc
                       "Corr_Type",            #CorrStatus
                       "GNSS_Heigh",           #FeatureHeight
