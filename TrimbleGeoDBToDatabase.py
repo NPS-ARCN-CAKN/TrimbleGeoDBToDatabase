@@ -175,7 +175,7 @@ def ExportDepthJoined():
         SqlFile = open(SqlFilePath,'a')
 
         # Create the first half of the SQL insert query
-        SqlPrefix = 'INSERT INTO tblPondDepths(PONDNAME,SAMPLEDATE,GPS_TIME,LATITUDE,LONGITUDE,DEPTH,COMMENTS_DEPTHS,DATAFILE,SOURCE) VALUES('
+        SqlPrefix = 'INSERT INTO tblPondDepths(PONDNAME,SAMPLEDATE,GPS_TIME,LATITUDE,LONGITUDE,DEPTH,COMMENTS_DEPTHS,DATAFILE,GPS_HEIGHT,VERT_PREC,HORZ_PREC,SOURCE) VALUES('
 
         # This will hold the insert queries as they are built
         InsertQueries = ""
@@ -187,7 +187,7 @@ def ExportDepthJoined():
 
         # Build a query to select the just inserted records in order
         # to validate them
-        ValidateQuery = "SELECT PONDNAME,SAMPLEDATE,GPS_TIME,LATITUDE,LONGITUDE,DEPTH,COMMENTS_DEPTHS,DATAFILE,SOURCE FROM tblPondDepths WHERE\n"
+        ValidateQuery = "SELECT PONDNAME,SAMPLEDATE,GPS_TIME,LATITUDE,LONGITUDE,DEPTH,COMMENTS_DEPTHS,DATAFILE,GPS_HEIGHT,VERT_PREC,HORZ_PREC,SOURCE FROM tblPondDepths WHERE\n"
 
         # Write the header info to file
         PURPOSE = "Transfer lake depth data from the field Trimble data collection application to the AK_ShallowLakes monitoring SQL Server database."
@@ -212,6 +212,10 @@ def ExportDepthJoined():
 
             CommentsDepths = Row['Comment'].strip()
 
+            GPSHeight = str(Row["GNSS_Heigh"])
+            VertPrec = str(Row["Vert_Prec"])
+            HorizPrec = str(Row["Horz_Prec"])
+
             DataFile = str(Row['Datafile'])
             Source = SOURCE_FILE_NAME
 
@@ -225,7 +229,7 @@ def ExportDepthJoined():
             CommentStr = (",NULL,'" if CommentsDepths == '' else ",'" + CommentsDepths + "','")
             InsertQueries = (InsertQueries + "      " + SqlPrefix  + "'" + PondName + "','" + SampleDate + "','" + GPS_Time + "'," + Latitude + "," + Longitude + "," + Depth +
                              CommentStr +
-                             DataFile + "','" + Source  + "');\n")
+                             DataFile + "'," + GPSHeight + "," + VertPrec + "," + HorizPrec + ",'" + Source  + "');\n")
 
         # Write out the query that will determine if the required
         # Events all exist
