@@ -183,7 +183,11 @@ def GetKeptFieldsFromPathfinder(FeatureType):
                       "GPS_Time"]             #CreationDateTimeLocal
 
     elif FeatureType == Feature.MONUMENT:
-        KeepFields = [
+        KeepFields = ['MonType',
+                      'Location',
+                      'Comment',
+                      'AccessType',
+
                       "Horz_Prec",            #HorizEstAcc
                       "Vert_Prec",            #VertEstAcc
                       "Corr_Type",            #CorrStatus
@@ -191,6 +195,7 @@ def GetKeptFieldsFromPathfinder(FeatureType):
                       "Rcvr_Type",            #DeviceType
                       "Max_PDOP",             #PDOP
                       "Max_HDOP",             #HDOP
+                      "LakeNumField",
                       "LakeNum",
                       "Datafile",
                       "GPS_Date",             #CreationDateTimeLocal
@@ -284,6 +289,21 @@ def AlterFieldNamesFromPathFinder(FeatureClassName, FeatureType):
                 arcpy.AlterField_management(FeatureClassName, f.name, "Deployment_Type")
             elif f.name == "RetCom":
                 arcpy.AlterField_management(FeatureClassName, f.name, "Comments")
+
+    elif FeatureType == Feature.MONUMENT:
+        Fields = arcpy.ListFields(FeatureClassName)
+
+        for f in Fields:
+            if f.name == "Rcvr_Type":
+                arcpy.AlterField_management(FeatureClassName, f.name, "DeviceType")
+            elif f.name == "Corr_Type":
+                arcpy.AlterField_management(FeatureClassName, f.name, "CorrStatus")
+            elif f.name == "Horz_Prec":
+                arcpy.AlterField_management(FeatureClassName, f.name, "HorizEstAcc")
+            elif f.name == "Vert_Prec":
+                arcpy.AlterField_management(FeatureClassName, f.name, "VertEstAcc")
+            elif f.name == "GNSS_Heigh":
+                arcpy.AlterField_management(FeatureClassName, f.name, "FeatureHeight")
 
 def AddNewDateField(TargetFeatureClassName, FieldName):
     arcpy.management.AddField(TargetFeatureClassName, FieldName, "DATE")
