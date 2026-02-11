@@ -505,7 +505,7 @@ def ExportMonumentJoined():
 
         SOURCE_FILE_NAME = os.path.basename(GEO_DB_PATH) # Extract just the filename from the path.
 
-        FEATURE_CLASS = "Monument"
+        FEATURE_CLASS = "Monument_Joined"
         TABLE_NAME = "tblMonuments"
 
         DatetimeStr = TrimbleUtility.GetCurrentDatetimeStr()
