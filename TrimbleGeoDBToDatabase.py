@@ -658,6 +658,9 @@ def ExportContinuousJoined(ContinuousType : Continuous,
 
         SQLStatements = ''
 
+        fDate = datetime.datetime.strptime(fromDate, '%Y-%m-%d')
+        tDate = datetime.datetime.strptime(toDate, '%Y-%m-%d')
+
         for Row in TrimbleUtility.GetFeatureClassRows(FEATURE_CLASS):
             PySampleDateTime = Row['CreationDateTimeLocal']
 
@@ -667,8 +670,9 @@ def ExportContinuousJoined(ContinuousType : Continuous,
 
             if ContinuousType is Continuous.DEPLOYMENT_INSERT:
                 DateDeployed = TrimbleUtility.GetDateTime(PySampleDateTime, 'd')
+                DDeployed = datetime.datetime.strptime(DateDeployed, '%Y-%m-%d')
 
-                if DateDeployed >= fromDate and DateDeployed <= toDate:
+                if DDeployed >= fDate and DDeployed <= tDate:
                     TimeDeployed = TrimbleUtility.GetDateTime(PySampleDateTime, 't')
                     DeploymentType = Row['Deployment_Type']
                     DeployLatitude = str(Row['YCurrentMapCS'])
@@ -686,14 +690,13 @@ def ExportContinuousJoined(ContinuousType : Continuous,
             elif ContinuousType is Continuous.DEPLOYMENT_UPDATE:
                 if SiteName in mapDeployment:
                     DateDeployed = TrimbleUtility.GetDateTime(PySampleDateTime, 'd')
+                    DDeployed = datetime.datetime.strptime(DateDeployed, '%Y-%m-%d')
 
-                    if DateDeployed >= fromDate and DateDeployed <= toDate:
+                    if DDeployed >= fDate and DDeployed <= tDate:
                         TimeDeployed = TrimbleUtility.GetDateTime(PySampleDateTime, 't')
                         DeployLatitude = str(round(Row['YCurrentMapCS'], 6))
                         DeployLongitude = str(round(Row['XCurrentMapCS'], 6))
                         DeploymentNotes = Row['Comments']
-
-                        DateDeployed = mapDeployment[SiteName]
 
                         DeploymentNotesStr = ('NULL' if DeploymentNotes.strip() == '' else "'" + DeploymentNotes + "'")
 
@@ -711,14 +714,13 @@ def ExportContinuousJoined(ContinuousType : Continuous,
             elif ContinuousType is Continuous.RETRIEVAL_UPDATE:
                 if SiteName in mapDeployment:
                     DateRetrieved = TrimbleUtility.GetDateTime(PySampleDateTime, 'd')
+                    DRetrieved = datetime.datetime.strptime(DateRetrieved, '%Y-%m-%d')
 
-                    if DateRetrieved >= fromDate and DateRetrieved <= toDate:
+                    if DRetrieved >= fDate and DRetrieved <= tDate:
                         TimeRetrieved = TrimbleUtility.GetDateTime(PySampleDateTime, 't')
                         RetrieveLatitude = str(round(Row['YCurrentMapCS'], 6))
                         RetrieveLongitude = str(round(Row['XCurrentMapCS'], 6))
                         RetrievalNotes = Row['Comments']
-
-                        DateDeployed = mapDeployment[SiteName]
 
                         RetrievalNotesStr = ('NULL' if RetrievalNotes.strip() == '' else "'" + RetrievalNotes + "'")
 
