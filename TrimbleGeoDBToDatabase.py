@@ -562,12 +562,17 @@ def ExportMonumentJoined():
 
 def ExportContinuousJoined(ContinuousType : Continuous,
                            fromDate : str, toDate : str,
-                           DeployedCSV : csv.DictReader = None,
-                           KeepUpdateNotes = False):
+                           KeepUpdateNotes = False,
+                           UpdateLatLongOnly = True):
     """
     Translates the data in the Deployment/Retrieval featureclass into a
     script of SQL update statements that can be executed on the
     AK_ShallowLakes database.
+
+    NOTE: The SQL UPDATE statements (deployment and retreival) output
+    of this function must be manually validated for correctness
+    against the database in the site name and date deployed and
+    retrieved columns.
 
     Parameters:
     - ContinuousType = Type of continuous data. DEPLOYMENT_INSERT or
@@ -588,15 +593,6 @@ def ExportContinuousJoined(ContinuousType : Continuous,
       for the creation of the SQL INSERT/UPDATE statements.
     - toDate = this is the end date, from the feature class table for
       the creation of the SQL INSERT/UPDATE statements.
-    - DeployedCSV = A dictionary of class type csv.DictReader.
-      - Required for when the 'ContinuousType' arguement's value is
-        'Continuous.RETRIEVAL_UPDATE' or
-        'Continuous.DEPLOYMENT_UPDATE'.
-      - This reader is comprised of the DEPLOYED 'SiteName' and
-        'DateDeployed' table values whose records must be updated in
-        the retrieval columns for these particular deployed sites.
-        That is, the site name and deployement date, togeether are
-        unique.
     - KeepUpdateNotes = Keep update notes? If false (default), comment
       out the 'RetrievalNotes' or 'DeploymentNotes' in the SQL UPDATE
       statement's 'SET' clause. Otherwise, keep the comment column.
@@ -605,27 +601,20 @@ def ExportContinuousJoined(ContinuousType : Continuous,
         UPDATE statement, but is commented out, so this statement's
         execution does not overwrite previously entered retrieval or
         deployment notes for this record.
+    - UpdateLatLongOnly = Retrieval update string should only include
+      lat/long columns? The default value for this parameter is set to
+      'True' to only include lat/long columns in UPDATE statement.
+      Otherwise, the retrieval UPDATE statement will include the
+      'DateRetrieved' and 'TimeRetrieved' columns.
     """
     try:
 
-        def CSVDictToKeyedDict(csvDict : csv.DictReader):
-            d = {}
-            for row in csvDict:
-                d[row['SiteName']] = row['DateDeployed']
-
-            return d
-
         if ContinuousType is Continuous.DEPLOYMENT_INSERT:
-            AssertDeployed(DeployedCSV)
             FEATURE_CLASS = "Deployment_Joined"
         elif ContinuousType is Continuous.DEPLOYMENT_UPDATE:
-            AssertRetrieved(DeployedCSV)
             FEATURE_CLASS = "Deployment_Joined"
-            mapDeployment = CSVDictToKeyedDict(DeployedCSV)
         elif ContinuousType is Continuous.RETRIEVAL_UPDATE:
-            AssertRetrieved(DeployedCSV)
             FEATURE_CLASS = "Retrieval_Joined"
-            mapDeployment = CSVDictToKeyedDict(DeployedCSV)
         else:
             raise Exception("Value of 'ContinuousType' parameter is not valid.")
 
@@ -688,42 +677,50 @@ def ExportContinuousJoined(ContinuousType : Continuous,
                                       "'" + SiteName + "', '" + DateDeployed + "', '" + TimeDeployed + "'" + DeploymentTypeStr + ", " + DeployLatitude + ", " + DeployLongitude + DeploymentNotesStr + ")\n\n")
 
             elif ContinuousType is Continuous.DEPLOYMENT_UPDATE:
-                if SiteName in mapDeployment:
-                    DateDeployed = TrimbleUtility.GetDateTime(PySampleDateTime, 'd')
-                    DDeployed = datetime.datetime.strptime(DateDeployed, '%Y-%m-%d')
+                DateDeployed = TrimbleUtility.GetDateTime(PySampleDateTime, 'd')
+                DDeployed = datetime.datetime.strptime(DateDeployed, '%Y-%m-%d')
 
-                    if DDeployed >= fDate and DDeployed <= tDate:
-                        TimeDeployed = TrimbleUtility.GetDateTime(PySampleDateTime, 't')
-                        DeployLatitude = str(round(Row['YCurrentMapCS'], 6))
-                        DeployLongitude = str(round(Row['XCurrentMapCS'], 6))
-                        DeploymentNotes = Row['Comments']
+                if DDeployed >= fDate and DDeployed <= tDate:
+                    TimeDeployed = TrimbleUtility.GetDateTime(PySampleDateTime, 't')
+                    DeployLatitude = str(round(Row['YCurrentMapCS'], 6))
+                    DeployLongitude = str(round(Row['XCurrentMapCS'], 6))
+                    DeploymentNotes = Row['Comments']
 
-                        DeploymentNotesStr = ('NULL' if DeploymentNotes.strip() == '' else "'" + DeploymentNotes + "'")
+                    DeploymentNotesStr = ('NULL' if DeploymentNotes.strip() == '' else "'" + DeploymentNotes + "'")
 
-                        SQLStatements += ('UPDATE dbo.' + TABLE_NAME + "\n" +
-                                          'SET [DeployLatitude] = ' + DeployLatitude + ",\n")
-                        SQLStatements += ('    [DeployLongitude] = ' + DeployLongitude + ",\n" +
-                                          '    [DeploymentNotes] = ' + DeploymentNotesStr + "\n"
-                                          if KeepUpdateNotes
-                                          else
-                                          '    [DeployLongitude] = ' + DeployLongitude + "\n" +
-                                          '--  [DeploymentNotes] = ' + DeploymentNotesStr + "\n")
+                    SQLStatements += ('UPDATE dbo.' + TABLE_NAME + "\n" +
+                                      'SET [DeployLatitude] = ' + DeployLatitude + ",\n")
+                    SQLStatements += ('    [DeployLongitude] = ' + DeployLongitude + ",\n" +
+                                      '    [DeploymentNotes] = ' + DeploymentNotesStr + "\n"
+                                      if KeepUpdateNotes
+                                      else
+                                      '    [DeployLongitude] = ' + DeployLongitude + "\n" +
+                                      '--  [DeploymentNotes] = ' + DeploymentNotesStr + "\n")
 
-                        SQLStatements +=  "WHERE SiteName = '" + SiteName + "' AND DateDeployed = '" + DateDeployed + "'\n\n"
+                    SQLStatements +=  "WHERE SiteName = '" + SiteName + "' AND DateDeployed = '" + DateDeployed + "'\n\n"
 
             elif ContinuousType is Continuous.RETRIEVAL_UPDATE:
-                if SiteName in mapDeployment:
-                    DateRetrieved = TrimbleUtility.GetDateTime(PySampleDateTime, 'd')
-                    DRetrieved = datetime.datetime.strptime(DateRetrieved, '%Y-%m-%d')
+                DateRetrieved = TrimbleUtility.GetDateTime(PySampleDateTime, 'd')
+                DRetrieved = datetime.datetime.strptime(DateRetrieved, '%Y-%m-%d')
 
-                    if DRetrieved >= fDate and DRetrieved <= tDate:
-                        TimeRetrieved = TrimbleUtility.GetDateTime(PySampleDateTime, 't')
-                        RetrieveLatitude = str(round(Row['YCurrentMapCS'], 6))
-                        RetrieveLongitude = str(round(Row['XCurrentMapCS'], 6))
-                        RetrievalNotes = Row['Comments']
+                if DRetrieved >= fDate and DRetrieved <= tDate:
+                    TimeRetrieved = TrimbleUtility.GetDateTime(PySampleDateTime, 't')
+                    RetrieveLatitude = str(round(Row['YCurrentMapCS'], 6))
+                    RetrieveLongitude = str(round(Row['XCurrentMapCS'], 6))
+                    RetrievalNotes = Row['Comments']
 
-                        RetrievalNotesStr = ('NULL' if RetrievalNotes.strip() == '' else "'" + RetrievalNotes + "'")
+                    RetrievalNotesStr = ('NULL' if RetrievalNotes.strip() == '' else "'" + RetrievalNotes + "'")
 
+                    if UpdateLatLongOnly:
+                        SQLStatements += ('UPDATE dbo.' + TABLE_NAME + "\n" +
+                                          'SET [RetrieveLatitude] = ' + RetrieveLatitude + ",\n")
+                        SQLStatements += ('    [RetrieveLongitude] = ' + RetrieveLongitude + ",\n" +
+                                          '    [RetrievalNotes] = ' + RetrievalNotesStr + "\n"
+                                          if KeepUpdateNotes
+                                          else
+                                          '    [RetrieveLongitude] = ' + RetrieveLongitude + "\n" +
+                                          '--  [RetrievalNotes] = ' + RetrievalNotesStr + "\n")
+                    else:
                         SQLStatements += ('UPDATE dbo.' + TABLE_NAME + "\n" +
                                           "SET [DateRetrieved] = '" + DateRetrieved + "',\n" +
                                           "    [TimeRetrieved] = '" + TimeRetrieved + "',\n" +
@@ -735,7 +732,7 @@ def ExportContinuousJoined(ContinuousType : Continuous,
                                           '    [RetrieveLongitude] = ' + RetrieveLongitude + "\n" +
                                           '--  [RetrievalNotes] = ' + RetrievalNotesStr + "\n")
 
-                        SQLStatements +=  "WHERE SiteName = '" + SiteName + "' AND DateDeployed = '" + DateDeployed + "'\n\n"
+                    SQLStatements +=  "WHERE SiteName = '" + SiteName + "' AND DateRetrieved = '" + DateRetrieved + "'\n\n"
 
         SqlFile.write(WrapSQLStatementsInTransaction(SQLStatements))
 
@@ -782,9 +779,3 @@ def WrapSQLStatementsInTransaction(SQLStatements):
 
 def AssertGeoDB(GEO_DB_PATH):
     assert GEO_DB_PATH is not None, "arcpy.env.workspace must be a geodatabase path string!"
-
-def AssertRetrieved(DeployedCSV):
-    assert isinstance(DeployedCSV, csv.DictReader), "Deployment or retrieval update export requires a CSV.DictReader object."
-
-def AssertDeployed(DeployedCSV):
-    assert DeployedCSV is None, "Deployed update export requires 'DeployedCSV' argument to be 'None'."
