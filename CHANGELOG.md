@@ -9,22 +9,15 @@ scheme as implemented by the
 [openSUSE project](https://en.opensuse.org/openSUSE:Versioning_scheme).
 
 ## [Unreleased]
-### Added
-- Add parameter `UpdateLatLongOnly` to function
-  `ExportContinuousJoined`. This applies to which retrieval columns
-  are updated.
 
-- Add latitude/longitude only columns (in function
-  `ExportContinuousJoined`) to SQL retrieval update statement options.
-  This handles the case where retrieval dates and times (and possible
-  notes) have been already entered.
-  
+### Added
+
 ### Changed
 
 - Update the date comparison conditions in function
   `ExportContinuousJoined` so that the date variables are all objects,
   rather then comparing strings.
-  
+
 - Revised notes to function `ExportContinuousJoined`.
 
 ### Removed
@@ -46,18 +39,27 @@ scheme as implemented by the
   `ExportContinuousJoined`. This idea behind this dictionary was
   enable the retrieval of the database deploy date for a particular
   site name; assuming the entered database date was superior to the
-  Trimble recorded date; this means though, that the imput to the
+  Trimble recorded date; this means though, that the input to the
   dictionary has a unique number of sitenames. This dictionary was
   also used to retrieve the deploy date for the retrieval SQL UPDATE
   script; but in practice, we may use the retieval date and sitename
-  as unique values.
+  as unique values after this retrieval date has been manually
+  entered.
+
+- Remove retrieval SQL UPDATE code that updated the `DateRetrieved`
+  and `TimeRetrieved` in function `ExportContinuousJoined`. Leave only
+  the update lat/long code. Downside: this requires that these column
+  values be entered manually. Since this is done as part of our
+  post-field process through the front-end, this is not an onerous
+  requirement. It also simplifies this code; so that deploy info from
+  the `mapDeployed` dictionary is not required.
 
 - Remove function `CSVDictToKeyedDict` from function
   `ExportContinuousJoined`.
-  
+
 - Remove the functions `AssertRetrieved` and `AssertDeplotyed`. No
   longer necessary after the parameter `DeployCSV` was removed.
-  
+
 ## [2.0] - 2024-11-12
 
 ## [1.3] - 2024-03-07
