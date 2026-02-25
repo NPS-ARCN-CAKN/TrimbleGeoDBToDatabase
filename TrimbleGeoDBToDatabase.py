@@ -562,8 +562,7 @@ def ExportMonumentJoined():
 
 def ExportContinuousJoined(ContinuousType : Continuous,
                            fromDate : str, toDate : str,
-                           KeepUpdateNotes = False,
-                           UpdateLatLongOnly = True):
+                           KeepUpdateNotes = False):
     """
     Translates the data in the Deployment/Retrieval featureclass into a
     script of SQL update statements that can be executed on the
@@ -601,11 +600,6 @@ def ExportContinuousJoined(ContinuousType : Continuous,
         UPDATE statement, but is commented out, so this statement's
         execution does not overwrite previously entered retrieval or
         deployment notes for this record.
-    - UpdateLatLongOnly = Retrieval update string should only include
-      lat/long columns? The default value for this parameter is set to
-      'True' to only include lat/long columns in UPDATE statement.
-      Otherwise, the retrieval UPDATE statement will include the
-      'DateRetrieved' and 'TimeRetrieved' columns.
     """
     try:
 
@@ -711,26 +705,14 @@ def ExportContinuousJoined(ContinuousType : Continuous,
 
                     RetrievalNotesStr = ('NULL' if RetrievalNotes.strip() == '' else "'" + RetrievalNotes + "'")
 
-                    if UpdateLatLongOnly:
-                        SQLStatements += ('UPDATE dbo.' + TABLE_NAME + "\n" +
-                                          'SET [RetrieveLatitude] = ' + RetrieveLatitude + ",\n")
-                        SQLStatements += ('    [RetrieveLongitude] = ' + RetrieveLongitude + ",\n" +
-                                          '    [RetrievalNotes] = ' + RetrievalNotesStr + "\n"
-                                          if KeepUpdateNotes
-                                          else
-                                          '    [RetrieveLongitude] = ' + RetrieveLongitude + "\n" +
-                                          '--  [RetrievalNotes] = ' + RetrievalNotesStr + "\n")
-                    else:
-                        SQLStatements += ('UPDATE dbo.' + TABLE_NAME + "\n" +
-                                          "SET [DateRetrieved] = '" + DateRetrieved + "',\n" +
-                                          "    [TimeRetrieved] = '" + TimeRetrieved + "',\n" +
-                                          '    [RetrieveLatitude] = ' + RetrieveLatitude + ",\n")
-                        SQLStatements += ('    [RetrieveLongitude] = ' + RetrieveLongitude + ",\n" +
-                                          '    [RetrievalNotes] = ' + RetrievalNotesStr + "\n"
-                                          if KeepUpdateNotes
-                                          else
-                                          '    [RetrieveLongitude] = ' + RetrieveLongitude + "\n" +
-                                          '--  [RetrievalNotes] = ' + RetrievalNotesStr + "\n")
+                    SQLStatements += ('UPDATE dbo.' + TABLE_NAME + "\n" +
+                                      'SET [RetrieveLatitude] = ' + RetrieveLatitude + ",\n")
+                    SQLStatements += ('    [RetrieveLongitude] = ' + RetrieveLongitude + ",\n" +
+                                      '    [RetrievalNotes] = ' + RetrievalNotesStr + "\n"
+                                      if KeepUpdateNotes
+                                      else
+                                      '    [RetrieveLongitude] = ' + RetrieveLongitude + "\n" +
+                                      '--  [RetrievalNotes] = ' + RetrievalNotesStr + "\n")
 
                     SQLStatements +=  "WHERE SiteName = '" + SiteName + "' AND DateRetrieved = '" + DateRetrieved + "'\n\n"
 
